@@ -19,20 +19,23 @@ function validateUserCredentials(userData: any) {
   return {value, error};
 }
 
+async function createToken(userIdParam: string): Promise<any> {
+  const {id, createdAt, ttl, userId} = await Token.create({userId: userIdParam});
+  return {token: {id, createdAt, ttl, userId}};
+}
+
 export const registerUser = async (userData: any): Promise<{ error?: any, token?: any }> => {
   const {value, error} = validateUserCredentials(userData);
   if (error) {
     return {error: {message: error.details[0].message, code: 422}};
-  } else {
-    const user = await User.create({
-      ...value,
-    })
-      .catch((err: any) => {
-        throw err;
-      });
-    const {id, createdAt, ttl, userId} = await Token.create({userId: user.id});
-    return {token: {id, createdAt, ttl, userId}};
   }
+  const user = await User.create({
+    ...value,
+  })
+    .catch((err: any) => {
+      throw err;
+    });
+  return createToken(user.id);
 };
 
 export const loginUser = async (loginData: any): Promise<{ error?: any, token?: any }> => {
@@ -40,22 +43,20 @@ export const loginUser = async (loginData: any): Promise<{ error?: any, token?: 
   if (error) {
     const {message} = error.details[0];
     return {error: {message, code: 422}};
-  } else {
-    const user = await User.findOne({email: value.email});
-    const error = {
-      code: 401,
-      message: 'Informations d\'identification incorrectes',
-    };
-    if (!user) {
-      return {error};
-    }
-    const isMatch = await user.isValidPassword(value.password);
-    if (!isMatch) {
-      return {error};
-    }
-    const {id, createdAt, ttl, userId} = await Token.create({userId: user.id});
-    return {token: {id, createdAt, ttl, userId}};
   }
+  const user = await User.findOne({email: value.email});
+  const authError = {
+    code: 401,
+    message: 'Informations d\'identification incorrectes',
+  };
+  if (!user) {
+    return {error: authError};
+  }
+  const isMatch = await user.isValidPassword(value.password);
+  if (!isMatch) {
+    return {error: authError};
+  }
+  return createToken(user.id);
 };
 
 export const logoutUser = async (user: any): Promise<boolean> => {

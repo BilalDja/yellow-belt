@@ -1,4 +1,6 @@
 # Yellow belt
+[![Maintainability](https://api.codeclimate.com/v1/badges/c3613bffd7e5da04e3ce/maintainability)](https://codeclimate.com/github/BilalDja/yellow-belt/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/c3613bffd7e5da04e3ce/test_coverage)](https://codeclimate.com/github/BilalDja/yellow-belt/test_coverage)
 
 Express Typescript boilerplate project comes with preconfigured mongoose testing environment, passport local and jwt strategies and morgan logging
 
