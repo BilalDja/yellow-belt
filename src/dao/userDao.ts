@@ -2,7 +2,7 @@ import Joi from 'joi';
 import User from '../entities/User';
 import Token from '../entities/Token';
 
-export const registerUser = async (userData: any): Promise<{ error?: any, token?: any }> => {
+function validateUserCredentials(userData: any) {
   const schema = Joi.object({
     email: Joi.string().email({minDomainSegments: 2}).required()
       .messages({
@@ -16,6 +16,11 @@ export const registerUser = async (userData: any): Promise<{ error?: any, token?
       }),
   });
   const {value, error} = schema.validate(userData, {abortEarly: false});
+  return {value, error};
+}
+
+export const registerUser = async (userData: any): Promise<{ error?: any, token?: any }> => {
+  const {value, error} = validateUserCredentials(userData);
   if (error) {
     return {error: {message: error.details[0].message, code: 422}};
   } else {
@@ -30,47 +35,26 @@ export const registerUser = async (userData: any): Promise<{ error?: any, token?
   }
 };
 
-export const loginUser = async (loginData: any): Promise<{ errors?: any, token?: any }> => {
-  const schema = Joi.object({
-    email: Joi.string().email({minDomainSegments: 2}).required()
-      .messages({
-        "any.required": "Email est requis",
-        "string.email": "Email invalide",
-      }),
-    password: Joi.string().min(6).required()
-      .messages({
-        "any.required": "Le mot de passe est requis",
-        "string.min": "Le mot de passe doit contenir au moin 6 caractères"
-      }),
-  });
-  const validationResult = schema.validate(loginData, {abortEarly: false});
-  if (validationResult.error) {
-    const errors = validationResult.error.details.map(({message, path}) => ({
-      message,
-      field: path[0],
-    }));
-    return {errors};
+export const loginUser = async (loginData: any): Promise<{ error?: any, token?: any }> => {
+  const {value, error} = validateUserCredentials(loginData);
+  if (error) {
+    const {message} = error.details[0];
+    return {error: {message, code: 422}};
   } else {
-    const validData = validationResult.value;
-    const user = await User.findOne({email: validData.email});
+    const user = await User.findOne({email: value.email});
+    const error = {
+      code: 401,
+      message: 'Informations d\'identification incorrectes',
+    };
     if (!user) {
-      return {
-        errors: [{
-          field: 'authorization',
-          message: 'Informations d\'identification incorrectes',
-        }],
-      };
+      return {error};
     }
-    const isMatch = await user.isValidPassword(validData.password);
+    const isMatch = await user.isValidPassword(value.password);
     if (!isMatch) {
-      return {
-        errors: [{
-          field: 'authorization',
-          message: 'Informations d\'identification incorrectes',
-        }],
-      };
+      return {error};
     }
-    return {token: user};
+    const {id, createdAt, ttl, userId} = await Token.create({userId: user.id});
+    return {token: {id, createdAt, ttl, userId}};
   }
 };
 

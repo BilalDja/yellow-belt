@@ -1,6 +1,5 @@
 import {Router} from 'express';
 import passport from 'passport';
-import jwt from 'jsonwebtoken';
 import User from '../entities/User';
 import {logoutUser} from '../dao/userDao';
 
@@ -31,22 +30,14 @@ userRouter.post('/register',
   });
 
 userRouter.post('/login', (req, res, next) => {
-  passport.authenticate('login', (err, user) => {
+  passport.authenticate('login', (err, token) => {
     try {
-      if (err || !user) {
-        const error = new Error('Login error');
-        return next(error);
+      if (err) {
+        return res.status(err.code || 400).json(err);
       }
-      req.login(user, {session: false}, (err) => {
-        if (err) {
-          next(err);
-        }
-        const payload = {id: user.id, email: user.email};
-        const token = jwt.sign({user: payload}, String(process.env.SECRET));
-        return res.json({token});
-      });
+      return res.json({token});
     } catch (err) {
-      return next(err);
+      return res.status(err.code || 400).json(err);
     }
   })(req, res, next);
 });

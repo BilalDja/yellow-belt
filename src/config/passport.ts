@@ -2,7 +2,7 @@ import passport from 'passport';
 import {Strategy as LocalStrategy} from 'passport-local';
 import {ExtractJwt, Strategy as JWTStrategy} from 'passport-jwt';
 import User from '../entities/User';
-import {registerUser} from '../dao/userDAO';
+import {loginUser, registerUser} from '../dao/userDAO';
 
 passport.use('register', new LocalStrategy({
   usernameField: 'email',
@@ -27,15 +27,11 @@ passport.use('login', new LocalStrategy({
   passwordField: 'password',
 }, async (email, password, done) => {
   try {
-    const user = await User.findOne({email});
-    if (!user) {
-      return done(null, false, {message: 'User not found'});
+    const {error, token} = await loginUser({email, password});
+    if (error) {
+      done(error);
     }
-    const validPassword = await user.isValidPassword(password);
-    if (!validPassword) {
-      return done(null, false, {message: 'Wrong credentials'});
-    }
-    return done(null, user, {message: 'Logged in successfully'});
+    done(null, token);
   } catch (err) {
     return done(err);
   }
