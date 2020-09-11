@@ -49,7 +49,7 @@ This project runs tests using **mocha** test framework, and **chai** assertion l
 ## Logging
 
 This project uses morgan library to create logs. You can find the configuration under `src/config/morgan.ts`. It writes logs to the console and stores them in files.
-The project uses rotating-file-stream
+The project uses [rotating-file-stream][rotating-file-stream] to store log files efficiently.
 ___
 ## Contribution
 
@@ -59,4 +59,4 @@ ___
 [passport]:http://www.passportjs.org/
 [passport-local]:http://www.passportjs.org/packages/passport-local/
 [passport-jwt]:http://www.passportjs.org/packages/passport-jwt/
-[rotating-file-stream]:
+[rotating-file-stream]:https://github.com/iccicci/rotating-file-stream
