@@ -12,10 +12,17 @@
     "start": "node -r dotenv-safe/config dist/index.js"
   },
   "keywords": [
+    "Boilerplate",
     "Express",
     "Typescript",
-    "Boilerplate",
-    "Mocha"
+    "mongodb",
+    "mongoose",
+    "mongodb-memory",
+    "logging",
+    "morgan",
+    "passport",
+    "Mocha",
+    "chai"
   ],
   "author": "BILAL Djaghout <b.djaghout@gmail.com",
   "license": "MIT",
