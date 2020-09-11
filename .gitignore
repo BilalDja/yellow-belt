@@ -1,0 +1,9 @@
+node_modules
+dist
+/.yarn/
+/src/logs/
+.env
+tests/subtests.ts
+/yarn-error.log
+/.yarnrc
+/.idea/
