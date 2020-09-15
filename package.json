@@ -1,6 +1,6 @@
 {
   "name": "yellow-belt",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Express typescript boilerplate project that gives you a boost and a nice workflow",
   "main": "index.js",
   "scripts": {
@@ -60,5 +60,14 @@
     "passport-local": "^1.0.0",
     "remove": "^0.1.5",
     "rotating-file-stream": "^2.1.3"
+  },
+  "repository": {
+    "url": "https://github.com/BilalDja/yellow-belt",
+    "type": "git"
+  },
+  "homepage": "https://github.com/BilalDja/yellow-belt",
+  "bugs": {
+    "url": "https://github.com/BilalDja/yellow-belt/issues",
+    "email": "b.djaghout@gmail.com"
   }
 }
