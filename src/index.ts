@@ -5,6 +5,7 @@ import userRouter from './routes/user';
 import morgan from './config/morgan';
 import db from './config/db';
 import './config/passport';
+import {four0four, errorsHandler} from './exeptions/errors-helper';
 
 const main = () => {
   // Database configuration
@@ -24,6 +25,10 @@ const main = () => {
   app.get('/', (_, res) => {
     res.send('<h1>Yellow Belt, ⭐!</h1>');
   });
+
+  // Setting 404 Error and Error Handler
+  app.use(four0four);
+  app.use(errorsHandler);
 
   app.listen(process.env.PORT, () => {
     app.emit('started');
